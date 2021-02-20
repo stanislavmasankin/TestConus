@@ -9,28 +9,30 @@ public interface IConusModel
     event Action<int> ChangedType;
     event Action<int> ChangedScale;
     event Action<Vector3> ChangedVectorMove;
+    event Action DestroedModel;
 
-    void AddConus(IConusModel counus);
-    List<IConusModel> GetList();
 
-    GameObject GetParent();
-    void SetParent(GameObject parent);
+    void DestroyModel();
 
-    int GetCountList();
+    void SetParent(IConusModel parent);
+    IConusModel GetParent();
+    void SetLastChild(IConusModel lastChild);
+    IConusModel GetLastChild();
 
-    void SetType(int type);
-    void SetScale(int scale);
-    void SetIsMainObjectConus(bool isMainObject);
+    IConusModel GetMainConus();
+    Transform GetTransform();
+    void SetTransform(Transform transform);
+
+    void SetTypeConus(int type);
     int GetTypeConus();
+
     int GetScaleConus();
-    bool isMainObjectConus();
+    void SetScaleConus(int scale);
 
     void SetVectorMove(Vector3 vectorMove);
     Vector3 GetVectorMove();
 
-    void AddConusS();
-    int GetConusS();
-    void MinusConusS();
+
 
 }
 

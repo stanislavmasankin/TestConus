@@ -6,71 +6,42 @@ using Random = UnityEngine.Random;
 
 public class ConusModel : IConusModel
 {
-    bool isMainObject = true;
-
     int scale;
 
     int type;
 
-    GameObject parent;
-
     Vector3 vectorMove;
 
-    List<IConusModel> list;
+    Transform transform;
 
-    //бесполезно
-    int posInList = 0;
-
-    int conuss;
-
+    IConusModel parrent;
+    IConusModel lastChild;
 
     public event Action<int> ChangedType;
     public event Action<Vector3> ChangedVectorMove;
     public event Action<int> ChangedScale;
+    public event Action DestroedModel;
 
-    public void AddConus(IConusModel counus) {
-        if (list != null)
-        {
-            list.Add(counus);
-        }
-        else {
-            list = new List<IConusModel>();
-            list.Add(counus);
-        }
-        AddConusS();
-    }
-    public List<IConusModel> GetList() {
-        if (list != null)
-        {
-            List<IConusModel> newList = list;
-            list.Clear();
-            return newList;
-        }
-        return null;
-    }
-    public int GetCountList()
-    {
-        if (list == null) {
-            return 0;
-        }
-        return list.Count;
-    }
-    public void SetType(int type) {
+    public void SetTypeConus(int type) {
 
         this.type = type;
         ChangedType?.Invoke(type);
         
     }
 
-    public void SetScale(int scale)
+    public void SetScaleConus(int scale)
     {
-        this.scale = scale;
-        ChangedScale?.Invoke(scale);
+        if (scale < 50)
+        {
+            this.scale = scale;
+            ChangedScale?.Invoke(scale);
+        }
+        else if (this.scale<50) {
+            this.scale = 50;
+            ChangedScale?.Invoke(50);
+        }
     }
 
-    public void SetIsMainObjectConus(bool isMainObject) {
-        this.isMainObject = isMainObject;
-    }
 
     public void SetVectorMove(Vector3 vectorMove)
     {
@@ -90,43 +61,56 @@ public class ConusModel : IConusModel
     {
         return scale;
     }
-    public bool isMainObjectConus()
+
+    public void DestroyModel()
     {
-        return isMainObject;
+        DestroedModel?.Invoke();
     }
 
-    public GameObject GetParent()
+    public void SetParent(IConusModel parent)
     {
-        if(isMainObject|| parent==null)
-            return null;
-        return parent;
+        this.parrent = parent;
+    }
+
+    public IConusModel GetParent()
+    {
+        if (parrent == null|| parrent == this)
+            return this;
+        return parrent;
+    }
+
+    public void SetLastChild(IConusModel lastChild)
+    {
+        this.lastChild = lastChild;
+    }
+
+    public IConusModel GetLastChild()
+    {
+        if (lastChild == null|| lastChild == this)
+            return this;
+        return lastChild;
     }
 
 
-
-    public void SetParent(GameObject parent)
+    public IConusModel GetMainConus()
     {
-        this.parent = parent;
-        isMainObject = false;
-    }
+        if (parrent == null|| parrent== this)
+            return this;
+        else
+            return parrent.GetMainConus();
 
-    //я устал пишу не думая
-    public void AddConusS()
-    {
-        conuss++;
+
     }
 
-    public int GetConusS()
+
+    public Transform GetTransform()
     {
-        return conuss;
+        return transform;
+    }
+    public void SetTransform(Transform transform)
+    {
+        this.transform = transform;
     }
 
-    public void MinusConusS()
-    {
-        conuss--;
-    }
-    public void MinusConusS(int d)
-    {
-        conuss = conuss - d;
-    }
+
 }

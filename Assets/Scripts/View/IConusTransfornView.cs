@@ -11,5 +11,10 @@ public interface IConusTransfornView
 
     void SetScale(int scale);
 
-    Vector3 GetPosition();
+    void DestroyGameObject();
+
+    void SetConus(IConusModel conusModel);
+
+    Transform GetTransform();
+
 }

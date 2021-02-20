@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class ConusCollisiomView : MonoBehaviour,IConusCollisiomView
 {
-    public event Action<GameObject> Collision;
+    public event Action<IConusModel> Collision;
+
     float radius;
     IConusModel conusModel;
 
@@ -16,10 +17,32 @@ public class ConusCollisiomView : MonoBehaviour,IConusCollisiomView
         this.conusModel = conusModel;
     }
 
-    
+    void OnMouseDown() {
+        //CameraModel.cameraModel.SetConus(gameObject);
+    }
+    float timeLastCol;
+    float deltaTimeToCol = 0.3f;
+    public void FixedUpdate()
+    {
+        if (timeLastCol >= 0) {
+            timeLastCol -= Time.deltaTime;
+        }
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (timeLastCol <= 0) {
+            timeLastCol = deltaTimeToCol;
+            Collision?.Invoke(collision.gameObject.GetComponent<ConusCollisiomView>().conusModel);
+        }
+        
+    }
     private void OnTriggerEnter(Collider other)
     {
-        Collision?.Invoke(other.gameObject);
+        if (timeLastCol <= 0)
+        {
+            timeLastCol = deltaTimeToCol;
+            Collision?.Invoke(other.gameObject.GetComponent<ConusCollisiomView>().conusModel);
+        }
     }
 
     public IConusModel GetTypeConus()

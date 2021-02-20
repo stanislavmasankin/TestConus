@@ -5,7 +5,7 @@ using UnityEngine;
 
 public interface IConusCollisiomView 
 {
-    event Action<GameObject> Collision;
+    event Action<IConusModel> Collision;
 
     void Init(float radius, IConusModel conusModel);
 

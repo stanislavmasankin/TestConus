@@ -8,60 +8,60 @@ public class ConusPresenter
     IConusColorView _conusColorView;
     IConusTransfornView _conusTransfornView;
     IConusCollisiomView _conusCollisiomView;
+    IDebugConusView _debugConusView;
 
 
     public ConusPresenter(IConusModel conusModel, IConusColorView conusColorView, 
-        IConusTransfornView conusTransfornView, IConusCollisiomView conusCollisiomView)
+        IConusTransfornView conusTransfornView, IConusCollisiomView conusCollisiomView,
+        IDebugConusView debugConusView)
     {
         _conusModel = conusModel;
         _conusColorView = conusColorView;
         _conusTransfornView = conusTransfornView;
         _conusCollisiomView = conusCollisiomView;
+        _debugConusView = debugConusView;
 
 
         _conusModel.ChangedVectorMove += SetVectorMove;
         _conusModel.ChangedType += SetType;
         _conusModel.ChangedScale += SetScale;
+        _conusModel.DestroedModel += DestroyAll;
+
 
         _conusTransfornView.EndVecorMove += GenerateNewVectorMove;
 
         _conusCollisiomView.Collision += Collision;
 
+        _conusModel.SetTransform(_conusTransfornView.GetTransform());
+        _conusTransfornView.SetConus(_conusModel);
 
     }
+    void DestroyAll() {
+        _conusTransfornView.DestroyGameObject();
+    }
 
-    void Collision(GameObject gameObject) {
-        IConusModel conusModel = gameObject.GetComponent<ConusCollisiomView>().GetTypeConus();
+    void Collision(IConusModel conusModel) {
+
 
         if (_conusModel.GetTypeConus() != conusModel.GetTypeConus()) {
             if (_conusModel.GetScaleConus() < conusModel.GetScaleConus()) {
-                if (conusModel.isMainObjectConus()) {
-                    if (_conusModel.isMainObjectConus()&& _conusModel.GetCountList()>0)
+
+                int modeGame = LvlGenerator.singletonWorld.modeGame;
+                if (modeGame == 1)
+                {
+                    if (conusModel.GetParent() == conusModel && _conusModel.GetParent() == _conusModel)
                     {
-                        //что за бесолпзеные неправильные куски кода
-                        //Стас, иди поспи
-                        /*
-
-                        for (int i = 0;i< _conusModel.GetCountList();i++) {
-                            _conusModel.GetList()[i].SetIsMainObjectConus(false);
-                            _conusModel.GetList()[i].SetParent(gameObject);
-                            _conusModel.GetList()[i].SetType(conusModel.GetTypeConus());
-                            //_conusModel.GetList()[i].SetVectorMove(gameObject.transform.position);
-                            //conusModel.AddConus(_conusModel);
-                            
-                        }
-                        */
-                        
+                        CollisionConus.ChangeParent(conusModel, _conusModel);
+                        GenerateNewVectorMove();
+                        _debugConusView.UpdateParent();
                     }
-
-
-                    _conusModel.SetIsMainObjectConus(false);
-                    _conusModel.SetParent(gameObject);
-                    _conusModel.SetType(conusModel.GetTypeConus());
-                    _conusModel.SetVectorMove(gameObject.transform.position);
-                    conusModel.AddConus(_conusModel);
-
                 }
+                if (modeGame  == 2)
+                {
+                    CollisionConus.DestroyMode(conusModel, _conusModel);
+                }
+
+
             }
         }
 
@@ -77,20 +77,17 @@ public class ConusPresenter
     void SetVectorMove(Vector3 vectorMove) {
 
             _conusTransfornView.SetVectorMove(vectorMove);
-            _conusTransfornView.Rotate();
+            //_conusTransfornView.Rotate();
 
     }
 
     void GenerateNewVectorMove()
     {
-        if (_conusModel.isMainObjectConus())
-        {
-            _conusModel.SetVectorMove(GenerateNewVecorMove.GenerateVecor(_conusModel.GetVectorMove()));
-        }
+        /*
+        if(_conusModel.GetParent() == _conusModel)
+            _conusModel.SetVectorMove(GenerateNewVecorMove.PlavniiVecotr(_conusModel));
         else
-        {
-
-            _conusModel.SetVectorMove(GenerateNewVecorMove.GenerateVecor(_conusModel.GetParent().transform.position, _conusModel.GetVectorMove(),_conusModel.GetConusS()));
-        }
+            _conusModel.SetVectorMove(GenerateNewVecorMove.GenerateVecorParent(_conusModel));
+            */
     }
 }
